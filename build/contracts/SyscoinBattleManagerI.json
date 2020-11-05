@@ -27,15 +27,15 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.5.13+commit.5b0b510c\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":false,\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"superblockHash\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"submitter\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"challenger\",\"type\":\"address\"}],\"name\":\"beginBattleSession\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/Users/jsidhu/Documents/GitHub/sysethereum-contracts1/contracts/interfaces/SyscoinBattleManagerI.sol\":\"SyscoinBattleManagerI\"},\"evmVersion\":\"petersburg\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/jsidhu/Documents/GitHub/sysethereum-contracts1/contracts/interfaces/SyscoinBattleManagerI.sol\":{\"keccak256\":\"0xf8b2414a059a740fa83732da4920a1366c65050eb7a71a5c02384baee3909510\",\"urls\":[\"bzz-raw://47fe417636eb124718f48987d688ab184ea240eb969dcf6d486febc57c1a5dc2\",\"dweb:/ipfs/QmaJGBEGGo7sHUrJPGb41vMqT8nvFrxXhpAcUfYDDNqdZg\"]}},\"version\":1}",
+  "metadata": "{\"compiler\":{\"version\":\"0.5.13+commit.5b0b510c\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":false,\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"superblockHash\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"submitter\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"challenger\",\"type\":\"address\"}],\"name\":\"beginBattleSession\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/mnt/ethereum/sysethereum-contracts/contracts/interfaces/SyscoinBattleManagerI.sol\":\"SyscoinBattleManagerI\"},\"evmVersion\":\"petersburg\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/mnt/ethereum/sysethereum-contracts/contracts/interfaces/SyscoinBattleManagerI.sol\":{\"keccak256\":\"0xf8b2414a059a740fa83732da4920a1366c65050eb7a71a5c02384baee3909510\",\"urls\":[\"bzz-raw://47fe417636eb124718f48987d688ab184ea240eb969dcf6d486febc57c1a5dc2\",\"dweb:/ipfs/QmaJGBEGGo7sHUrJPGb41vMqT8nvFrxXhpAcUfYDDNqdZg\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "pragma solidity ^0.5.13;\n\n// @dev - Manages a battle session between superblock submitter and challenger\ninterface SyscoinBattleManagerI {\n    // @dev - Start a battle session\n    function beginBattleSession(bytes32 superblockHash, address submitter, address challenger)\n        external;\n}\n",
-  "sourcePath": "/Users/jsidhu/Documents/GitHub/sysethereum-contracts1/contracts/interfaces/SyscoinBattleManagerI.sol",
+  "sourcePath": "/mnt/ethereum/sysethereum-contracts/contracts/interfaces/SyscoinBattleManagerI.sol",
   "ast": {
-    "absolutePath": "/Users/jsidhu/Documents/GitHub/sysethereum-contracts1/contracts/interfaces/SyscoinBattleManagerI.sol",
+    "absolutePath": "/mnt/ethereum/sysethereum-contracts/contracts/interfaces/SyscoinBattleManagerI.sol",
     "exportedSymbols": {
       "SyscoinBattleManagerI": [
         8059
@@ -184,7 +184,7 @@
     "src": "0:291:9"
   },
   "legacyAST": {
-    "absolutePath": "/Users/jsidhu/Documents/GitHub/sysethereum-contracts1/contracts/interfaces/SyscoinBattleManagerI.sol",
+    "absolutePath": "/mnt/ethereum/sysethereum-contracts/contracts/interfaces/SyscoinBattleManagerI.sol",
     "exportedSymbols": {
       "SyscoinBattleManagerI": [
         8059
@@ -337,8 +337,8 @@
     "version": "0.5.13+commit.5b0b510c.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.0.20",
-  "updatedAt": "2020-06-04T03:16:07.446Z",
+  "schemaVersion": "3.3.1",
+  "updatedAt": "2020-10-29T08:41:43.111Z",
   "devdoc": {
     "methods": {}
   },

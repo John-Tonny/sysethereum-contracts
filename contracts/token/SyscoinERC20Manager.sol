@@ -234,10 +234,10 @@ contract SyscoinERC20Manager is Initializable {
     {
         require(syscoinAddress.length > 0, "syscoinAddress cannot be zero");
         require(assetGUID > 0, "Asset GUID must not be 0");
-        if (net != Network.REGTEST) {
+        /* if (net != Network.REGTEST) {
             require(assetRegistry[assetGUID].erc20ContractAddress == erc20ContractAddress, "Asset registry contract does not match what was provided to this call");
         }
-
+    	*/
         SyscoinERC20I erc20 = SyscoinERC20I(erc20ContractAddress);
         require(precision == erc20.decimals(), "Decimals were not provided with the correct value");
         erc20.safeTransferFrom(msg.sender, address(this), value);

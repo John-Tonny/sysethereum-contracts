@@ -100,15 +100,15 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.5.13+commit.5b0b510c\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":false,\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"superblockHash\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"bondDeposit\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"superblockHash\",\"type\":\"bytes32\"}],\"name\":\"checkClaimFinished\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"getDeposit\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"superblockHash\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"winner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"loser\",\"type\":\"address\"}],\"name\":\"sessionDecided\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/Users/jsidhu/Documents/GitHub/sysethereum-contracts1/contracts/interfaces/SyscoinClaimManagerI.sol\":\"SyscoinClaimManagerI\"},\"evmVersion\":\"petersburg\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/jsidhu/Documents/GitHub/sysethereum-contracts1/contracts/interfaces/SyscoinClaimManagerI.sol\":{\"keccak256\":\"0x10621a56230a5720fce059a05915eceb0277cd955bbb1ad9f109ce6c247a5638\",\"urls\":[\"bzz-raw://c0fdbc1c8d02f6c62e4e8cabf044e85b805a21e6e7b13c6f304541707a5a3355\",\"dweb:/ipfs/QmSK8E13yiYq1AVHtfJbUvijVkjebvxdoixXvUVSAkz5eX\"]},\"/Users/jsidhu/Documents/GitHub/sysethereum-contracts1/contracts/interfaces/SyscoinSuperblocksI.sol\":{\"keccak256\":\"0x22ae5cd6c18f335811f46caab9c4f911daef746306114dc86c964f39b4aff0ff\",\"urls\":[\"bzz-raw://7755b0206b8e358b313589d9e47f9491f0d002ba509bc2b11d1bd2463f0f0c84\",\"dweb:/ipfs/QmbiEPAhnUCd3ydxQj8NVYFM2bDpRRezhxfLoqdnuhbPnD\"]}},\"version\":1}",
+  "metadata": "{\"compiler\":{\"version\":\"0.5.13+commit.5b0b510c\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":false,\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"superblockHash\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"bondDeposit\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"superblockHash\",\"type\":\"bytes32\"}],\"name\":\"checkClaimFinished\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"getDeposit\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"superblockHash\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"winner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"loser\",\"type\":\"address\"}],\"name\":\"sessionDecided\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/mnt/ethereum/sysethereum-contracts/contracts/interfaces/SyscoinClaimManagerI.sol\":\"SyscoinClaimManagerI\"},\"evmVersion\":\"petersburg\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/mnt/ethereum/sysethereum-contracts/contracts/interfaces/SyscoinClaimManagerI.sol\":{\"keccak256\":\"0x10621a56230a5720fce059a05915eceb0277cd955bbb1ad9f109ce6c247a5638\",\"urls\":[\"bzz-raw://c0fdbc1c8d02f6c62e4e8cabf044e85b805a21e6e7b13c6f304541707a5a3355\",\"dweb:/ipfs/QmSK8E13yiYq1AVHtfJbUvijVkjebvxdoixXvUVSAkz5eX\"]},\"/mnt/ethereum/sysethereum-contracts/contracts/interfaces/SyscoinSuperblocksI.sol\":{\"keccak256\":\"0x22ae5cd6c18f335811f46caab9c4f911daef746306114dc86c964f39b4aff0ff\",\"urls\":[\"bzz-raw://7755b0206b8e358b313589d9e47f9491f0d002ba509bc2b11d1bd2463f0f0c84\",\"dweb:/ipfs/QmbiEPAhnUCd3ydxQj8NVYFM2bDpRRezhxfLoqdnuhbPnD\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "pragma solidity ^0.5.13;\n\nimport './SyscoinSuperblocksI.sol';\n\ninterface SyscoinClaimManagerI {\n    function bondDeposit(bytes32 superblockHash, address account, uint amount) external returns (uint);\n    function getDeposit(address account) external view returns (uint);\n    function checkClaimFinished(bytes32 superblockHash) external returns (bool);\n    function sessionDecided(bytes32 superblockHash, address winner, address loser) external;\n}\n",
-  "sourcePath": "/Users/jsidhu/Documents/GitHub/sysethereum-contracts1/contracts/interfaces/SyscoinClaimManagerI.sol",
+  "sourcePath": "/mnt/ethereum/sysethereum-contracts/contracts/interfaces/SyscoinClaimManagerI.sol",
   "ast": {
-    "absolutePath": "/Users/jsidhu/Documents/GitHub/sysethereum-contracts1/contracts/interfaces/SyscoinClaimManagerI.sol",
+    "absolutePath": "/mnt/ethereum/sysethereum-contracts/contracts/interfaces/SyscoinClaimManagerI.sol",
     "exportedSymbols": {
       "SyscoinClaimManagerI": [
         8097
@@ -129,7 +129,7 @@
         "src": "0:24:10"
       },
       {
-        "absolutePath": "/Users/jsidhu/Documents/GitHub/sysethereum-contracts1/contracts/interfaces/SyscoinSuperblocksI.sol",
+        "absolutePath": "/mnt/ethereum/sysethereum-contracts/contracts/interfaces/SyscoinSuperblocksI.sol",
         "file": "./SyscoinSuperblocksI.sol",
         "id": 8062,
         "nodeType": "ImportDirective",
@@ -565,7 +565,7 @@
     "src": "0:447:10"
   },
   "legacyAST": {
-    "absolutePath": "/Users/jsidhu/Documents/GitHub/sysethereum-contracts1/contracts/interfaces/SyscoinClaimManagerI.sol",
+    "absolutePath": "/mnt/ethereum/sysethereum-contracts/contracts/interfaces/SyscoinClaimManagerI.sol",
     "exportedSymbols": {
       "SyscoinClaimManagerI": [
         8097
@@ -586,7 +586,7 @@
         "src": "0:24:10"
       },
       {
-        "absolutePath": "/Users/jsidhu/Documents/GitHub/sysethereum-contracts1/contracts/interfaces/SyscoinSuperblocksI.sol",
+        "absolutePath": "/mnt/ethereum/sysethereum-contracts/contracts/interfaces/SyscoinSuperblocksI.sol",
         "file": "./SyscoinSuperblocksI.sol",
         "id": 8062,
         "nodeType": "ImportDirective",
@@ -1026,8 +1026,8 @@
     "version": "0.5.13+commit.5b0b510c.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.0.20",
-  "updatedAt": "2020-06-04T03:16:07.447Z",
+  "schemaVersion": "3.3.1",
+  "updatedAt": "2020-10-29T08:41:43.112Z",
   "devdoc": {
     "methods": {}
   },

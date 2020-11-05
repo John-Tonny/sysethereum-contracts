@@ -1,6 +1,7 @@
 var HDWalletProvider = require("@truffle/hdwallet-provider");
-const etherscanAPIKEY = process.env.ETHERSCAN;
-var mnenomic = "cup aisle bright dice when flame left assume laptop lock cry brown";
+// const etherscanAPIKEY = process.env.ETHERSCAN;
+const etherscanAPIKEY = '4889fed1249f42d1bb6b66c7be01f71b';
+var mnenomic = "elegant bless garlic trend load put panther ladder print cinnamon stamp sun";
 module.exports = {
   networks: {
     development: {
@@ -27,7 +28,7 @@ module.exports = {
     },
     rinkeby: {
       provider:   function () {
-         return new HDWalletProvider(mnenomic, "https://rinkeby.infura.io/v3/d178aecf49154b12be98e68e998cfb8d");
+         return new HDWalletProvider(mnenomic, "https://rinkeby.infura.io/v3/4889fed1249f42d1bb6b66c7be01f71b");
       },
       network_id: "4",
       skipDryRun: true,

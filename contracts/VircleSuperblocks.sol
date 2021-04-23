@@ -1,15 +1,15 @@
-pragma solidity ^0.5.13;
+pragma solidity ^0.5.4;
 
-import './interfaces/SyscoinSuperblocksI.sol';
-import "./SyscoinErrorCodes.sol";
-import "./SyscoinTransactionProcessor.sol";
+import './interfaces/VircleSuperblocksI.sol';
+import "./VircleErrorCodes.sol";
+import "./VircleTransactionProcessor.sol";
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
-import "./SyscoinParser/SyscoinMessageLibrary.sol";
+import "./VircleParser/VircleMessageLibrary.sol";
 
 // @dev - Manages superblocks
 //
 // Management of superblocks and status transitions
-contract SyscoinSuperblocks is Initializable, SyscoinSuperblocksI, SyscoinErrorCodes, SyscoinMessageLibrary {
+contract VircleSuperblocks is Initializable, VircleSuperblocksI, VircleErrorCodes, VircleMessageLibrary {
 
     uint constant ERR_PARSE_TX_SYS = 10170;
 
@@ -21,7 +21,7 @@ contract SyscoinSuperblocks is Initializable, SyscoinSuperblocksI, SyscoinErrorC
 
     bytes32 internal bestSuperblock;
 
-    SyscoinTransactionProcessor public syscoinERC20Manager;
+    VircleTransactionProcessor public vircleERC20Manager;
 
     event NewSuperblock(bytes32 superblockHash, address who);
     event ApprovedSuperblock(bytes32 superblockHash, address who);
@@ -34,7 +34,7 @@ contract SyscoinSuperblocks is Initializable, SyscoinSuperblocksI, SyscoinErrorC
     event VerifyTransaction(bytes32 txHash, uint returnCode);
     event RelayTransaction(bytes32 txHash, uint returnCode);
     event ChallengeCancelTransferRequest(uint returnCode);
-    // SyscoinClaimManager
+    // VircleClaimManager
     address public trustedClaimManager;
 
     uint32 constant SYSCOIN_TX_VERSION_ASSET_ACTIVATE = 0x7402;
@@ -44,11 +44,11 @@ contract SyscoinSuperblocks is Initializable, SyscoinSuperblocksI, SyscoinErrorC
         _;
     }
 
-    // @param _syscoinERC20Manager - address of the SyscoinERC20Manager contract to be associated with
+    // @param _vircleERC20Manager - address of the VircleERC20Manager contract to be associated with
     // @param _claimManager - address of the ClaimManager contract to be associated with
-    function init(address _syscoinERC20Manager, address _claimManager) public initializer {
-        require(address(syscoinERC20Manager) == address(0) && _syscoinERC20Manager != address(0));
-        syscoinERC20Manager = SyscoinTransactionProcessor(_syscoinERC20Manager);
+    function init(address _vircleERC20Manager, address _claimManager) public initializer {
+        require(address(vircleERC20Manager) == address(0) && _vircleERC20Manager != address(0));
+        vircleERC20Manager = VircleTransactionProcessor(_vircleERC20Manager);
 
         require(address(trustedClaimManager) == address(0) && _claimManager != address(0));
         trustedClaimManager = _claimManager;
@@ -69,7 +69,7 @@ contract SyscoinSuperblocks is Initializable, SyscoinSuperblocksI, SyscoinErrorC
         result = uint32(uint8(input[pos+3])) + uint32(uint8(input[pos + 2]))*(2**8) + uint32(uint8(input[pos + 1]))*(2**16) + uint32(uint8(input[pos]))*(2**24);
     }
 
-    // Returns asset data parsed from the op_return data output from syscoin asset burn transaction
+    // Returns asset data parsed from the op_return data output from vircle asset burn transaction
     function scanAssetDetails(bytes memory txBytes, uint pos)
         internal
         pure
@@ -135,11 +135,11 @@ contract SyscoinSuperblocks is Initializable, SyscoinSuperblocksI, SyscoinErrorC
         // if dummy 0x00 is present this is a witness transaction
         if(n_inputs == 0x00){
             (n_inputs, pos) = parseVarInt(txBytes, pos); // flag
-            require(n_inputs != 0x00, "#SyscoinSuperblocks getOpReturnPos(): Unexpected dummy/flag");
+            require(n_inputs != 0x00, "#VircleSuperblocks getOpReturnPos(): Unexpected dummy/flag");
             // after dummy/flag the real var int comes for txins
             (n_inputs, pos) = parseVarInt(txBytes, pos);
         }
-        require(n_inputs < 100, "#SyscoinSuperblocks getOpReturnPos(): Incorrect size of n_inputs");
+        require(n_inputs < 100, "#VircleSuperblocks getOpReturnPos(): Incorrect size of n_inputs");
 
         for (uint i = 0; i < n_inputs; i++) {
             pos += 36;  // skip outpoint
@@ -148,7 +148,7 @@ contract SyscoinSuperblocks is Initializable, SyscoinSuperblocksI, SyscoinErrorC
         }
         
         (n_outputs, pos) = parseVarInt(txBytes, pos);
-        require(n_outputs < 10, "#SyscoinSuperblocks getOpReturnPos(): Incorrect size of n_outputs");
+        require(n_outputs < 10, "#VircleSuperblocks getOpReturnPos(): Incorrect size of n_outputs");
         for (uint i = 0; i < n_outputs; i++) {
             pos += 8;
             // varint
@@ -163,12 +163,12 @@ contract SyscoinSuperblocks is Initializable, SyscoinSuperblocksI, SyscoinErrorC
             pos += 1;
             return pos;
         }
-        revert("#SyscoinSuperblocks getOpReturnPos(): No OpReturn found");
+        revert("#VircleSuperblocks getOpReturnPos(): No OpReturn found");
     }
 
     /**
-     * @dev Parse syscoin mint transaction to recover bridgeTransferId
-     * @param txBytes syscoin raw transaction
+     * @dev Parse vircle mint transaction to recover bridgeTransferId
+     * @param txBytes vircle raw transaction
      * @return errorCode, bridgeTransferId
      */
     function parseMintTx(bytes memory txBytes)
@@ -197,8 +197,8 @@ contract SyscoinSuperblocks is Initializable, SyscoinSuperblocksI, SyscoinErrorC
     }
 
 
-     /** @dev Parse syscoin asset transaction to recover asset guid and contract, for purposes of updating asset registry in erc20manager
-     * @param txBytes syscoin raw transaction
+     /** @dev Parse vircle asset transaction to recover asset guid and contract, for purposes of updating asset registry in erc20manager
+     * @param txBytes vircle raw transaction
      * @return errorCode, assetGuid, erc20Address
      */
     function parseAssetTx(bytes memory txBytes)
@@ -230,7 +230,7 @@ contract SyscoinSuperblocks is Initializable, SyscoinSuperblocksI, SyscoinErrorC
 
     /**
      * Parse txBytes and returns ethereum tx receipt
-     * @param txBytes syscoin raw transaction
+     * @param txBytes vircle raw transaction
      * @param pos position at where to start parsing
      * @return ethTxReceipt ethereum tx receipt
      */
@@ -273,7 +273,7 @@ contract SyscoinSuperblocks is Initializable, SyscoinSuperblocksI, SyscoinErrorC
 
      /**
      * Parse txBytes and returns assetguid + contract address
-     * @param txBytes syscoin raw transaction
+     * @param txBytes vircle raw transaction
      * @param pos position at where to start parsing
      * @return asset guid (uint32) and erc20 address linked to the asset guid to update registry in erc20manager
      */
@@ -597,27 +597,27 @@ contract SyscoinSuperblocks is Initializable, SyscoinSuperblocksI, SyscoinErrorC
     // @param _txBytes - transaction bytes
     // @param _txIndex - transaction's index within the block
     // @param _txSiblings - transaction's Merkle siblings
-    // @param _syscoinBlockHeader - block header containing transaction
-    // @param _syscoinBlockIndex - block's index within superblock
-    // @param _syscoinBlockSiblings - block's merkle siblings
+    // @param _vircleBlockHeader - block header containing transaction
+    // @param _vircleBlockIndex - block's index within superblock
+    // @param _vircleBlockSiblings - block's merkle siblings
     // @param _superblockHash - superblock containing block header
     function verifySPVProofs(
-        bytes memory _syscoinBlockHeader,
-        uint _syscoinBlockIndex,
-        uint[] memory _syscoinBlockSiblings,
+        bytes memory _vircleBlockHeader,
+        uint _vircleBlockIndex,
+        uint[] memory _vircleBlockSiblings,
         bytes32 _superblockHash,
         bytes memory _txBytes,
         uint _txIndex,
         uint[] memory _txSiblings
     ) private returns (uint) {
-        // Check if Syscoin block belongs to given superblock
-        if (bytes32(computeMerkle(dblShaFlip(_syscoinBlockHeader), _syscoinBlockIndex, _syscoinBlockSiblings))
+        // Check if Vircle block belongs to given superblock
+        if (bytes32(computeMerkle(dblShaFlip(_vircleBlockHeader), _vircleBlockIndex, _vircleBlockSiblings))
             != superblocks[_superblockHash].blocksMerkleRoot) {
-            // Syscoin block is not in superblock
+            // Vircle block is not in superblock
             emit VerifyTransaction(bytes32(0), ERR_SUPERBLOCK_MERKLE_ROOT);
             return 0;
         }
-        return verifyTx(_txBytes, _txIndex, _txSiblings, _syscoinBlockHeader, _superblockHash);
+        return verifyTx(_txBytes, _txIndex, _txSiblings, _vircleBlockHeader, _superblockHash);
     }
 
     // @dev - relays transaction `_txBytes` to ERC20Manager's processTransaction() method.
@@ -630,20 +630,20 @@ contract SyscoinSuperblocks is Initializable, SyscoinSuperblocksI, SyscoinErrorC
     // @param _txBytes - transaction bytes
     // @param _txIndex - transaction's index within the block
     // @param _txSiblings - transaction's Merkle siblings
-    // @param _syscoinBlockHeader - block header containing transaction
-    // @param _syscoinBlockIndex - block's index within superblock
-    // @param _syscoinBlockSiblings - block's merkle siblings
+    // @param _vircleBlockHeader - block header containing transaction
+    // @param _vircleBlockIndex - block's index within superblock
+    // @param _vircleBlockSiblings - block's merkle siblings
     // @param _superblockHash - superblock containing block header
     function relayTx(
         bytes memory _txBytes,
         uint _txIndex,
         uint[] memory _txSiblings,
-        bytes memory _syscoinBlockHeader,
-        uint _syscoinBlockIndex,
-        uint[] memory _syscoinBlockSiblings,
+        bytes memory _vircleBlockHeader,
+        uint _vircleBlockIndex,
+        uint[] memory _vircleBlockSiblings,
         bytes32 _superblockHash
     ) public returns (uint) {
-        uint txHash = verifySPVProofs(_syscoinBlockHeader, _syscoinBlockIndex, _syscoinBlockSiblings, _superblockHash, _txBytes, _txIndex, _txSiblings);
+        uint txHash = verifySPVProofs(_vircleBlockHeader, _vircleBlockIndex, _vircleBlockSiblings, _superblockHash, _txBytes, _txIndex, _txSiblings);
         if (txHash != 0) {
             uint value;
             address destinationAddress;
@@ -656,7 +656,7 @@ contract SyscoinSuperblocks is Initializable, SyscoinSuperblocksI, SyscoinErrorC
                 emit RelayTransaction(bytes32(txHash), ret);
                 return ret;
             }
-            syscoinERC20Manager.processTransaction(txHash, value, destinationAddress, superblocks[_superblockHash].submitter, erc20ContractAddress, assetGUID, precision);
+            vircleERC20Manager.processTransaction(txHash, value, destinationAddress, superblocks[_superblockHash].submitter, erc20ContractAddress, assetGUID, precision);
             return value;
         }
         emit RelayTransaction(bytes32(0), ERR_RELAY_VERIFY);
@@ -673,20 +673,20 @@ contract SyscoinSuperblocks is Initializable, SyscoinSuperblocksI, SyscoinErrorC
     // @param _txBytes - transaction bytes
     // @param _txIndex - transaction's index within the block
     // @param _txSiblings - transaction's Merkle siblings
-    // @param _syscoinBlockHeader - block header containing transaction
-    // @param _syscoinBlockIndex - block's index within superblock
-    // @param _syscoinBlockSiblings - block's merkle siblings
+    // @param _vircleBlockHeader - block header containing transaction
+    // @param _vircleBlockIndex - block's index within superblock
+    // @param _vircleBlockSiblings - block's merkle siblings
     // @param _superblockHash - superblock containing block header
     function relayAssetTx(
         bytes memory _txBytes,
         uint _txIndex,
         uint[] memory _txSiblings,
-        bytes memory _syscoinBlockHeader,
-        uint _syscoinBlockIndex,
-        uint[] memory _syscoinBlockSiblings,
+        bytes memory _vircleBlockHeader,
+        uint _vircleBlockIndex,
+        uint[] memory _vircleBlockSiblings,
         bytes32 _superblockHash
     ) public returns (uint) {
-        uint txHash = verifySPVProofs(_syscoinBlockHeader, _syscoinBlockIndex, _syscoinBlockSiblings, _superblockHash, _txBytes, _txIndex, _txSiblings);
+        uint txHash = verifySPVProofs(_vircleBlockHeader, _vircleBlockIndex, _vircleBlockSiblings, _superblockHash, _txBytes, _txIndex, _txSiblings);
         if (txHash != 0) {
             uint ret;
             uint32 assetGUID;
@@ -697,9 +697,9 @@ contract SyscoinSuperblocks is Initializable, SyscoinSuperblocksI, SyscoinErrorC
                 return ret;
             }
             uint32 height = superblocks[_superblockHash].height*60;
-            height += uint32(_syscoinBlockIndex);
+            height += uint32(_vircleBlockIndex);
             // pass in height of block as well by calc superblock sets of 60 blocks
-            syscoinERC20Manager.processAsset(txHash, assetGUID, height, erc20ContractAddress);
+            vircleERC20Manager.processAsset(txHash, assetGUID, height, erc20ContractAddress);
             return 0;
         }
         emit RelayTransaction(bytes32(0), ERR_RELAY_VERIFY);
@@ -712,20 +712,20 @@ contract SyscoinSuperblocks is Initializable, SyscoinSuperblocksI, SyscoinErrorC
     // @param _txBytes - transaction bytes
     // @param _txIndex - transaction's index within the block
     // @param _txSiblings - transaction's Merkle siblings
-    // @param _syscoinBlockHeader - block header containing transaction
-    // @param _syscoinBlockIndex - block's index within superblock
-    // @param _syscoinBlockSiblings - block's merkle siblings
+    // @param _vircleBlockHeader - block header containing transaction
+    // @param _vircleBlockIndex - block's index within superblock
+    // @param _vircleBlockSiblings - block's merkle siblings
     // @param _superblockHash - superblock containing block header
     function challengeCancelTransfer(
         bytes memory _txBytes,
         uint _txIndex,
         uint[] memory _txSiblings,
-        bytes memory _syscoinBlockHeader,
-        uint _syscoinBlockIndex,
-        uint[] memory _syscoinBlockSiblings,
+        bytes memory _vircleBlockHeader,
+        uint _vircleBlockIndex,
+        uint[] memory _vircleBlockSiblings,
         bytes32 _superblockHash
     ) public returns (uint) {
-        uint txHash = verifySPVProofs(_syscoinBlockHeader, _syscoinBlockIndex, _syscoinBlockSiblings, _superblockHash, _txBytes, _txIndex, _txSiblings);
+        uint txHash = verifySPVProofs(_vircleBlockHeader, _vircleBlockIndex, _vircleBlockSiblings, _superblockHash, _txBytes, _txIndex, _txSiblings);
         if (txHash != 0) {
             uint32 bridgeTransferId;
             uint ret;
@@ -736,14 +736,14 @@ contract SyscoinSuperblocks is Initializable, SyscoinSuperblocksI, SyscoinErrorC
             }
             // check if cancellation request exists in valid state
             // cancel cancellation request if challenger wins, challenger gets paid cancellors deposit
-            syscoinERC20Manager.processCancelTransferFail(bridgeTransferId, msg.sender);
+            vircleERC20Manager.processCancelTransferFail(bridgeTransferId, msg.sender);
             return 0;
         }
         emit ChallengeCancelTransferRequest(ERR_CANCEL_TRANSFER_VERIFY);
         return(ERR_CANCEL_TRANSFER_VERIFY);
     }
 
-    // @dev - Parses a syscoin tx
+    // @dev - Parses a vircle tx
     //
     // @param txBytes - tx byte array
     // Outputs
@@ -781,11 +781,11 @@ contract SyscoinSuperblocks is Initializable, SyscoinSuperblocksI, SyscoinErrorC
         // if dummy 0x00 is present this is a witness transaction
         if(n_inputs == 0x00){
             (n_inputs, pos) = parseVarInt(txBytes, pos); // flag
-            require(n_inputs != 0x00, "#SyscoinSuperblocks skipInputs(): Unexpected dummy/flag");
+            require(n_inputs != 0x00, "#VircleSuperblocks skipInputs(): Unexpected dummy/flag");
             // after dummy/flag the real var int comes for txins
             (n_inputs, pos) = parseVarInt(txBytes, pos);
         }
-        require(n_inputs < 100, "#SyscoinSuperblocks skipInputs(): Incorrect size of n_inputs");
+        require(n_inputs < 100, "#VircleSuperblocks skipInputs(): Incorrect size of n_inputs");
 
         for (uint i = 0; i < n_inputs; i++) {
             pos += 36;  // skip outpoint
@@ -835,9 +835,9 @@ contract SyscoinSuperblocks is Initializable, SyscoinSuperblocksI, SyscoinErrorC
         return flip32Bytes(uint(sha256(abi.encodePacked(sha256(abi.encodePacked(_dataBytes))))));
     }
 
-    // @dev - extract Merkle root field from a raw Syscoin block header
+    // @dev - extract Merkle root field from a raw Vircle block header
     //
-    // @param _blockHeader - Syscoin block header bytes
+    // @param _blockHeader - Vircle block header bytes
     // @param pos - where to start reading root from
     // @return - block's Merkle root in big endian format
     function getHeaderMerkleRoot(bytes memory _blockHeader) public pure returns (uint) {
@@ -849,7 +849,7 @@ contract SyscoinSuperblocks is Initializable, SyscoinSuperblocksI, SyscoinErrorC
     }
 
     // @dev - Checks whether the transaction identified by `_txHash` is in the block identified by `_blockHeaderBytes`
-    // and whether the block is in the Syscoin main chain. Transaction check is done via Merkle proof.
+    // and whether the block is in the Vircle main chain. Transaction check is done via Merkle proof.
     // Note: no verification is performed to prevent txHash from just being an
     // internal hash in the Merkle tree. Thus this helper method should NOT be used
     // directly and is intended to be private.

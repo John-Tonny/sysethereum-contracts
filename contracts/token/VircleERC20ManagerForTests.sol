@@ -1,11 +1,11 @@
-pragma solidity ^0.5.13;
+pragma solidity ^0.5.4;
 
-import "./SyscoinERC20Manager.sol";
+import "./VircleERC20Manager.sol";
 
 // DONOT USE IN PRODUCTION
-contract SyscoinERC20ManagerForTests is SyscoinERC20Manager {
-    using SafeERC20 for SyscoinERC20I;
-    // keyhash or scripthash for syscoinWitnessProgram
+contract VircleERC20ManagerForTests is VircleERC20Manager {
+    using SafeERC20 for VircleERC20I;
+    // keyhash or scripthash for vircleWitnessProgram
     function freezeBurnERC20(
         uint value,
         uint32 assetGUID,
@@ -18,14 +18,14 @@ contract SyscoinERC20ManagerForTests is SyscoinERC20Manager {
         returns (bool)
     {
         // commented out on purpose
-        // require(syscoinAddress.length > 0, "syscoinAddress cannot be zero");
+        // require(vircleAddress.length > 0, "vircleAddress cannot be zero");
 
         // commented out on purpose
         // require(assetGUID > 0, "Asset GUID must not be 0");
         
         assetBalances[assetGUID] = assetBalances[assetGUID].add(value);
 
-        SyscoinERC20I erc20 = SyscoinERC20I(erc20ContractAddress);
+        VircleERC20I erc20 = VircleERC20I(erc20ContractAddress);
         require(precision == erc20.decimals(), "Decimals were not provided with the correct value");
         erc20.safeTransferFrom(msg.sender, address(this), value);
         emit TokenFreeze(msg.sender, value, 0);

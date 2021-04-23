@@ -1,9 +1,9 @@
-pragma solidity ^0.5.13;
+pragma solidity ^0.5.4;
 
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20Detailed.sol";
 
-contract SyscoinERC20 is ERC20, ERC20Detailed {
+contract VircleERC20 is ERC20, ERC20Detailed {
     constructor(
         string memory name,
         string memory symbol,

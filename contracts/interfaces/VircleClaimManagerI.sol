@@ -1,8 +1,8 @@
-pragma solidity ^0.5.13;
+pragma solidity ^0.5.4;
 
-import './SyscoinSuperblocksI.sol';
+import './VircleSuperblocksI.sol';
 
-interface SyscoinClaimManagerI {
+interface VircleClaimManagerI {
     function bondDeposit(bytes32 superblockHash, address account, uint amount) external returns (uint);
     function getDeposit(address account) external view returns (uint);
     function checkClaimFinished(bytes32 superblockHash) external returns (bool);

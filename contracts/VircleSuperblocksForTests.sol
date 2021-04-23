@@ -1,8 +1,8 @@
-pragma solidity ^0.5.13;
+pragma solidity ^0.5.4;
 
-import "./SyscoinSuperblocks.sol";
+import "./VircleSuperblocks.sol";
 
-contract SyscoinSuperblocksForTests is SyscoinSuperblocks {
+contract VircleSuperblocksForTests is VircleSuperblocks {
     event DebugSuperblock(
         bytes32 superblockHash,
         bytes32 blocksMerkleRoot,

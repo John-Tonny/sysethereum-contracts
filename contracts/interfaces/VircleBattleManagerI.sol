@@ -1,7 +1,7 @@
-pragma solidity ^0.5.13;
+pragma solidity ^0.5.4;
 
 // @dev - Manages a battle session between superblock submitter and challenger
-interface SyscoinBattleManagerI {
+interface VircleBattleManagerI {
     // @dev - Start a battle session
     function beginBattleSession(bytes32 superblockHash, address submitter, address challenger)
         external;

@@ -1,8 +1,8 @@
-pragma solidity ^0.5.13;
+pragma solidity ^0.5.4;
 
 import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
 
-contract SyscoinDepositsManager {
+contract VircleDepositsManager {
 
     using SafeMath for uint;
 
@@ -45,7 +45,9 @@ contract SyscoinDepositsManager {
 
         deposits[msg.sender] = deposits[msg.sender].sub(amount);
         // stop using .transfer() because of gas issue after ethereum upgrade
-        msg.sender.call.value(amount)("");
+        // john
+        msg.sender.call.value(amount);
+        // msg.sender.call.value(amount)("");
         emit DepositWithdrawn(msg.sender, amount);
         return deposits[msg.sender];
     }

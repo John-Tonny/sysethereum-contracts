@@ -1,9 +1,9 @@
-pragma solidity ^0.5.13;
+pragma solidity ^0.5.4;
 
 import "solidity-rlp/contracts/RLPReader.sol";
 
-// parse a raw Syscoin transaction byte array
-contract SyscoinMessageLibrary {
+// parse a raw Vircle transaction byte array
+contract VircleMessageLibrary {
 
     using RLPReader for RLPReader.RLPItem;
     using RLPReader for bytes;

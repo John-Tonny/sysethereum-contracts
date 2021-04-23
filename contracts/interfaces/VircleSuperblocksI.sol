@@ -1,6 +1,6 @@
-pragma solidity ^0.5.13;
+pragma solidity ^0.5.4;
 
-interface SyscoinSuperblocksI {
+interface VircleSuperblocksI {
 
     // @dev - Superblock status
     enum Status { Uninitialized, New, InBattle, SemiApproved, Approved, Invalid }
@@ -41,9 +41,9 @@ interface SyscoinSuperblocksI {
         bytes calldata _txBytes,
         uint _txIndex,
         uint[] calldata _txSiblings,
-        bytes calldata _syscoinBlockHeader,
-        uint _syscoinBlockIndex,
-        uint[] calldata _syscoinBlockSiblings,
+        bytes calldata _vircleBlockHeader,
+        uint _vircleBlockIndex,
+        uint[] calldata _vircleBlockSiblings,
         bytes32 _superblockHash
     ) external returns (uint);
 
@@ -64,9 +64,9 @@ interface SyscoinSuperblocksI {
         bytes calldata _txBytes,
         uint _txIndex,
         uint[] calldata _txSiblings,
-        bytes calldata _syscoinBlockHeader,
-        uint _syscoinBlockIndex,
-        uint[] calldata _syscoinBlockSiblings,
+        bytes calldata _vircleBlockHeader,
+        uint _vircleBlockIndex,
+        uint[] calldata _vircleBlockSiblings,
         bytes32 _superblockHash
     ) external returns (uint);
 }

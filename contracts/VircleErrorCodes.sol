@@ -1,7 +1,7 @@
-pragma solidity ^0.5.13;
+pragma solidity ^0.5.4;
 
-// @dev - SyscoinSuperblocks error codes
-contract SyscoinErrorCodes {
+// @dev - VircleSuperblocks error codes
+contract VircleErrorCodes {
     // Error codes
     uint constant ERR_INVALID_HEADER = 10050;
     uint constant ERR_COINBASE_INDEX = 10060; // coinbase tx index within Bitcoin merkle isn't 0

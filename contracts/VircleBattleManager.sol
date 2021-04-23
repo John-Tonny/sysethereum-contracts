@@ -1,15 +1,15 @@
-pragma solidity ^0.5.13;
+pragma solidity ^0.5.4;
 
-import './interfaces/SyscoinClaimManagerI.sol';
-import './interfaces/SyscoinSuperblocksI.sol';
-import './SyscoinErrorCodes.sol';
+import './interfaces/VircleClaimManagerI.sol';
+import './interfaces/VircleSuperblocksI.sol';
+import './VircleErrorCodes.sol';
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
-import "./SyscoinParser/SyscoinMessageLibrary.sol";
+import "./VircleParser/VircleMessageLibrary.sol";
 
 // @dev - Manages a battle session between superblock submitter and challenger
-contract SyscoinBattleManager is Initializable, SyscoinErrorCodes, SyscoinMessageLibrary {
+contract VircleBattleManager is Initializable, VircleErrorCodes, VircleMessageLibrary {
 
-    // For verifying Syscoin difficulty
+    // For verifying Vircle difficulty
     uint constant TARGET_TIMESPAN =  21600;
     uint constant TARGET_TIMESPAN_MIN = 17280; // TARGET_TIMESPAN * (8/10);
     uint constant TARGET_TIMESPAN_MAX = 27000; // TARGET_TIMESPAN * (10/8);
@@ -30,8 +30,8 @@ contract SyscoinBattleManager is Initializable, SyscoinErrorCodes, SyscoinMessag
         uint txHash;
 
         uint coinbaseMerkleRoot; // Merkle root of auxiliary block hash tree; stored in coinbase tx field
-        uint[] chainMerkleProof; // proves that a given Syscoin block hash belongs to a tree with the above root
-        uint syscoinHashIndex; // index of Syscoin block hash within block hash tree
+        uint[] chainMerkleProof; // proves that a given Vircle block hash belongs to a tree with the above root
+        uint vircleHashIndex; // index of Vircle block hash within block hash tree
         uint coinbaseMerkleRootCode; // encodes whether or not the root was found properly
 
         uint parentMerkleRoot; // Merkle root of transaction tree from parent Bitcoin block header
@@ -41,7 +41,7 @@ contract SyscoinBattleManager is Initializable, SyscoinErrorCodes, SyscoinMessag
         uint parentNonce;
         uint pos;
     }
-    // Syscoin block header stored as a struct, mostly for readability purposes.
+    // Vircle block header stored as a struct, mostly for readability purposes.
     // BlockHeader structs can be obtained by parsing a block header's first 80 bytes
     // with parseHeaderBytes.
     struct BlockHeader {
@@ -59,11 +59,11 @@ contract SyscoinBattleManager is Initializable, SyscoinErrorCodes, SyscoinMessag
     Network private net;
 
 
-    // Syscoin claim manager
-    SyscoinClaimManagerI trustedSyscoinClaimManager;
+    // Vircle claim manager
+    VircleClaimManagerI trustedVircleClaimManager;
 
     // Superblocks contract
-    SyscoinSuperblocksI trustedSuperblocks;
+    VircleSuperblocksI trustedSuperblocks;
 
     event NewBattle(bytes32 superblockHash,address submitter, address challenger);
     event ChallengerConvicted(bytes32 superblockHash, uint err, address challenger);
@@ -86,7 +86,7 @@ contract SyscoinBattleManager is Initializable, SyscoinErrorCodes, SyscoinMessag
     // @param _superblockTimeout Time to wait for challenges (in seconds)
     function init(
         Network _network,
-        SyscoinSuperblocksI _superblocks,
+        VircleSuperblocksI _superblocks,
         uint _superblockDuration,
         uint _superblockTimeout
     ) external initializer {
@@ -96,14 +96,14 @@ contract SyscoinBattleManager is Initializable, SyscoinErrorCodes, SyscoinMessag
         superblockTimeout = _superblockTimeout;
     }
 
-    function setSyscoinClaimManager(SyscoinClaimManagerI _syscoinClaimManager) external {
-        require(address(trustedSyscoinClaimManager) == address(0) && address(_syscoinClaimManager) != address(0));
-        trustedSyscoinClaimManager = _syscoinClaimManager;
+    function setVircleClaimManager(VircleClaimManagerI _vircleClaimManager) external {
+        require(address(trustedVircleClaimManager) == address(0) && address(_vircleClaimManager) != address(0));
+        trustedVircleClaimManager = _vircleClaimManager;
     }
 
     // @dev - Start a battle session
     function beginBattleSession(bytes32 superblockHash, address submitter, address challenger)
-        external onlyFrom(address(trustedSyscoinClaimManager)) {
+        external onlyFrom(address(trustedVircleClaimManager)) {
         BattleSession storage session = sessions[superblockHash];
 
         require(session.submitter == address(0));
@@ -123,9 +123,9 @@ contract SyscoinBattleManager is Initializable, SyscoinErrorCodes, SyscoinMessag
     // 0x48 bits
     // 0x4c nonce
 
-    // @dev - extract previous block field from a raw Syscoin block header
+    // @dev - extract previous block field from a raw Vircle block header
     //
-    // @param _blockHeader - Syscoin block header bytes
+    // @param _blockHeader - Vircle block header bytes
     // @param pos - where to start reading hash from
     // @return - hash of block's parent in big endian format
     function getHashPrevBlock(bytes memory _blockHeader, uint pos) private pure returns (uint) {
@@ -138,25 +138,25 @@ contract SyscoinBattleManager is Initializable, SyscoinErrorCodes, SyscoinMessag
     }
 
 
-    // @dev - extract timestamp field from a raw Syscoin block header
+    // @dev - extract timestamp field from a raw Vircle block header
     //
-    // @param _blockHeader - Syscoin block header bytes
+    // @param _blockHeader - Vircle block header bytes
     // @param pos - where to start reading bits from
     // @return - block's timestamp in big-endian format
     function getTimestamp(bytes memory _blockHeader, uint pos) private pure returns (uint32 time) {
         return bytesToUint32Flipped(_blockHeader, 0x44+pos);
     }
 
-    // @dev - extract bits field from a raw Syscoin block header
+    // @dev - extract bits field from a raw Vircle block header
     //
-    // @param _blockHeader - Syscoin block header bytes
+    // @param _blockHeader - Vircle block header bytes
     // @param pos - where to start reading bits from
     // @return - block's difficulty in bits format, also big-endian
     function getBits(bytes memory _blockHeader, uint pos) private pure returns (uint32 bits) {
         return bytesToUint32Flipped(_blockHeader, 0x48+pos);
     }
 
-    // @dev - converts raw bytes representation of a Syscoin block header to struct representation
+    // @dev - converts raw bytes representation of a Vircle block header to struct representation
     //
     // @param _rawBytes - first 80 bytes of a block header
     // @return - exact same header information in BlockHeader struct form
@@ -186,7 +186,7 @@ contract SyscoinBattleManager is Initializable, SyscoinErrorCodes, SyscoinMessag
         auxpow.coinbaseTxIndex = getBytesLE(rawBytes, pos, 32);
         pos += 4;
         (auxpow.chainMerkleProof, pos) = scanMerkleBranch(rawBytes, pos, 0);
-        auxpow.syscoinHashIndex = getBytesLE(rawBytes, pos, 32);
+        auxpow.vircleHashIndex = getBytesLE(rawBytes, pos, 32);
         pos += 4;
         // calculate block hash instead of reading it above, as some are LE and some are BE, we cannot know endianness and have to calculate from parent block header
         auxpow.blockHash = dblShaFlipMem(rawBytes, pos, 80);
@@ -361,7 +361,7 @@ contract SyscoinBattleManager is Initializable, SyscoinErrorCodes, SyscoinMessag
     // in order to prove that `ap`'s coinbase tx is in that Bitcoin block.
     //
     // @param _ap - AuxPoW information
-    // @return - Merkle root of Bitcoin block that the Syscoin block
+    // @return - Merkle root of Bitcoin block that the Vircle block
     // with this info was mined in if AuxPoW Merkle proof is correct,
     // garbage otherwise
     function computeParentMerkle(AuxPoW memory _ap) private pure returns (uint) {
@@ -371,21 +371,21 @@ contract SyscoinBattleManager is Initializable, SyscoinErrorCodes, SyscoinMessag
     }
 
     // @dev - calculates the Merkle root of a tree containing auxiliary block hashes
-    // in order to prove that the Syscoin block identified by _blockHash
+    // in order to prove that the Vircle block identified by _blockHash
     // was merge-mined in a Bitcoin block.
     //
-    // @param _blockHash - SHA-256 hash of a certain Syscoin block
+    // @param _blockHash - SHA-256 hash of a certain Vircle block
     // @param _ap - AuxPoW information corresponding to said block
     // @return - Merkle root of auxiliary chain tree
     // if AuxPoW Merkle proof is correct, garbage otherwise
     function computeChainMerkle(uint _blockHash, AuxPoW memory _ap) private pure returns (uint) {
         return computeMerkle(_blockHash,
-                             _ap.syscoinHashIndex,
+                             _ap.vircleHashIndex,
                              _ap.chainMerkleProof);
     }    
 
     // @dev - checks if a merge-mined block's Merkle proofs are correct,
-    // i.e. Syscoin block hash is in coinbase Merkle tree
+    // i.e. Vircle block hash is in coinbase Merkle tree
     // and coinbase transaction is in parent Merkle tree.
     //
     // @param _blockHash - SHA-256 hash of the block whose Merkle proofs are being checked
@@ -539,7 +539,7 @@ contract SyscoinBattleManager is Initializable, SyscoinErrorCodes, SyscoinMessag
     // @dev - Verify block headers sent by challenger
     function doRespondBlockHeaders(
         BattleSession storage session,
-        SyscoinSuperblocksI.SuperblockInfo memory superblockInfo,
+        VircleSuperblocksI.SuperblockInfo memory superblockInfo,
         bytes32 merkleRoot,
         BlockHeader memory lastHeader
     ) private returns (uint) {
@@ -588,7 +588,7 @@ contract SyscoinBattleManager is Initializable, SyscoinErrorCodes, SyscoinMessag
             }
         }
 
-        SyscoinSuperblocksI.SuperblockInfo memory superblockInfo;
+        VircleSuperblocksI.SuperblockInfo memory superblockInfo;
         (superblockInfo.blocksMerkleRoot, superblockInfo.timestamp,superblockInfo.mtpTimestamp,superblockInfo.lastHash,superblockInfo.lastBits,superblockInfo.parentId,,,superblockInfo.height) =
             trustedSuperblocks.getSuperblock(superblockHash);
 
@@ -712,8 +712,8 @@ contract SyscoinBattleManager is Initializable, SyscoinErrorCodes, SyscoinMessag
         return timestamps[5];
     }
     // @dev - Validate superblock accumulated work + other block header fields
-    function validateHeaders(BattleSession storage session, SyscoinSuperblocksI.SuperblockInfo memory superblockInfo, BlockHeader[] memory blockHeadersParsed) private returns (uint) {
-        SyscoinSuperblocksI.SuperblockInfo memory prevSuperblockInfo;
+    function validateHeaders(BattleSession storage session, VircleSuperblocksI.SuperblockInfo memory superblockInfo, BlockHeader[] memory blockHeadersParsed) private returns (uint) {
+        VircleSuperblocksI.SuperblockInfo memory prevSuperblockInfo;
         BlockHeader memory lastHeader = blockHeadersParsed[blockHeadersParsed.length-1];
         (,,prevSuperblockInfo.mtpTimestamp,prevSuperblockInfo.lastHash,prevSuperblockInfo.lastBits,,,,) =
             trustedSuperblocks.getSuperblock(superblockInfo.parentId);
@@ -784,7 +784,7 @@ contract SyscoinBattleManager is Initializable, SyscoinErrorCodes, SyscoinMessag
 
         if (block.timestamp > session.lastActionTimestamp + superblockTimeout) {
             convictSubmitter(superblockHash, session.submitter, session.challenger, ERR_SUPERBLOCK_TIMEOUT);
-            trustedSyscoinClaimManager.checkClaimFinished(superblockHash);
+            trustedVircleClaimManager.checkClaimFinished(superblockHash);
             return ERR_SUPERBLOCK_TIMEOUT;
         }
         return ERR_SUPERBLOCK_NO_TIMEOUT;
@@ -792,14 +792,14 @@ contract SyscoinBattleManager is Initializable, SyscoinErrorCodes, SyscoinMessag
 
     // @dev - To be called when a challenger is convicted
     function convictChallenger(bytes32 superblockHash, address submitter, address challenger, uint err) private {
-        trustedSyscoinClaimManager.sessionDecided(superblockHash, submitter, challenger);
+        trustedVircleClaimManager.sessionDecided(superblockHash, submitter, challenger);
         emit ChallengerConvicted(superblockHash, err, challenger);
         disable(superblockHash);
     }
 
     // @dev - To be called when a submitter is convicted
     function convictSubmitter(bytes32 superblockHash, address submitter, address challenger, uint err) private {
-        trustedSyscoinClaimManager.sessionDecided(superblockHash, challenger, submitter);
+        trustedVircleClaimManager.sessionDecided(superblockHash, challenger, submitter);
         emit SubmitterConvicted(superblockHash, err, submitter);
         disable(superblockHash);
     }

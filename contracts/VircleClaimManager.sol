@@ -1,17 +1,17 @@
-pragma solidity ^0.5.13;
+pragma solidity ^0.5.4;
 
-import './interfaces/SyscoinSuperblocksI.sol';
-import './interfaces/SyscoinClaimManagerI.sol';
-import './interfaces/SyscoinBattleManagerI.sol';
-import './SyscoinDepositsManager.sol';
-import './SyscoinErrorCodes.sol';
+import './interfaces/VircleSuperblocksI.sol';
+import './interfaces/VircleClaimManagerI.sol';
+import './interfaces/VircleBattleManagerI.sol';
+import './VircleDepositsManager.sol';
+import './VircleErrorCodes.sol';
 import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 // @dev - Manager of superblock claims
 //
 // Manages superblocks proposal and challenges
-contract SyscoinClaimManager is Initializable, SyscoinDepositsManager, SyscoinErrorCodes {
+contract VircleClaimManager is Initializable, VircleDepositsManager, VircleErrorCodes {
 
     using SafeMath for uint;
 
@@ -38,10 +38,10 @@ contract SyscoinClaimManager is Initializable, SyscoinDepositsManager, SyscoinEr
     mapping (bytes32 => SuperblockClaim) public claims;
 
     // Superblocks contract
-    SyscoinSuperblocksI public trustedSuperblocks;
+    VircleSuperblocksI public trustedSuperblocks;
 
     // Battle manager contract
-    SyscoinBattleManagerI public trustedSyscoinBattleManager;
+    VircleBattleManagerI public trustedVircleBattleManager;
 
     // Confirmations required to confirm semi approved superblocks
     uint public superblockConfirmations;
@@ -62,12 +62,12 @@ contract SyscoinClaimManager is Initializable, SyscoinDepositsManager, SyscoinEr
     event ErrorClaim(bytes32 superblockHash, uint err);
 
     modifier onlyBattleManager() {
-        require(msg.sender == address(trustedSyscoinBattleManager));
+        require(msg.sender == address(trustedVircleBattleManager));
         _;
     }
 
     modifier onlyMeOrBattleManager() {
-        require(msg.sender == address(trustedSyscoinBattleManager) || msg.sender == address(this));
+        require(msg.sender == address(trustedVircleBattleManager) || msg.sender == address(this));
         _;
     }
     
@@ -78,14 +78,14 @@ contract SyscoinClaimManager is Initializable, SyscoinDepositsManager, SyscoinEr
     // @param _superblockTimeout Time to wait for challenges (in seconds)
     // @param _superblockConfirmations Confirmations required to confirm semi approved superblocks
     function init(
-        SyscoinSuperblocksI _superblocks,
-        SyscoinBattleManagerI _syscoinBattleManager,
+        VircleSuperblocksI _superblocks,
+        VircleBattleManagerI _vircleBattleManager,
         uint _superblockDelay,
         uint _superblockTimeout,
         uint _superblockConfirmations
     ) public initializer {
         trustedSuperblocks = _superblocks;
-        trustedSyscoinBattleManager = _syscoinBattleManager;
+        trustedVircleBattleManager = _vircleBattleManager;
         superblockDelay = _superblockDelay;
         superblockTimeout = _superblockTimeout;
         superblockConfirmations = _superblockConfirmations;
@@ -261,7 +261,7 @@ contract SyscoinClaimManager is Initializable, SyscoinDepositsManager, SyscoinEr
         claim.challenger = msg.sender;
         emit SuperblockClaimChallenged(superblockHash, msg.sender);
 
-        trustedSyscoinBattleManager.beginBattleSession(superblockHash, claim.submitter,
+        trustedVircleBattleManager.beginBattleSession(superblockHash, claim.submitter,
             claim.challenger);
 
         emit VerificationGameStarted(superblockHash, claim.submitter,
@@ -289,7 +289,7 @@ contract SyscoinClaimManager is Initializable, SyscoinDepositsManager, SyscoinEr
                 emit ErrorClaim(superblockHash, ERR_SUPERBLOCK_BAD_CLAIM);
                 return false;
             }
-            if (trustedSuperblocks.getSuperblockStatus(id) != SyscoinSuperblocksI.Status.SemiApproved) {
+            if (trustedSuperblocks.getSuperblockStatus(id) != VircleSuperblocksI.Status.SemiApproved) {
                 emit ErrorClaim(superblockHash, ERR_SUPERBLOCK_BAD_STATUS);
                 return false;
             }
@@ -305,7 +305,7 @@ contract SyscoinClaimManager is Initializable, SyscoinDepositsManager, SyscoinEr
             emit ErrorClaim(superblockHash, ERR_SUPERBLOCK_MISSING_CONFIRMATIONS);
             return false;
         }
-        if (trustedSuperblocks.getSuperblockStatus(id) != SyscoinSuperblocksI.Status.SemiApproved) {
+        if (trustedSuperblocks.getSuperblockStatus(id) != VircleSuperblocksI.Status.SemiApproved) {
             emit ErrorClaim(superblockHash, ERR_SUPERBLOCK_BAD_STATUS);
             return false;
         }
@@ -362,9 +362,9 @@ contract SyscoinClaimManager is Initializable, SyscoinDepositsManager, SyscoinEr
             return false;
         }
 
-        SyscoinSuperblocksI.Status status = trustedSuperblocks.getSuperblockStatus(superblockHash);
+        VircleSuperblocksI.Status status = trustedSuperblocks.getSuperblockStatus(superblockHash);
 
-        if (status != SyscoinSuperblocksI.Status.SemiApproved) {
+        if (status != VircleSuperblocksI.Status.SemiApproved) {
             emit ErrorClaim(superblockHash, ERR_SUPERBLOCK_BAD_STATUS);
             return false;
         }
@@ -428,8 +428,8 @@ contract SyscoinClaimManager is Initializable, SyscoinDepositsManager, SyscoinEr
         // No challenger and parent approved; confirm immediately
         if (claim.challenger == address(0)) {
             bytes32 parentId = trustedSuperblocks.getSuperblockParentId(superblockHash);
-            SyscoinSuperblocksI.Status status = trustedSuperblocks.getSuperblockStatus(parentId);
-            if (status == SyscoinSuperblocksI.Status.Approved) {
+            VircleSuperblocksI.Status status = trustedSuperblocks.getSuperblockStatus(parentId);
+            if (status == VircleSuperblocksI.Status.Approved) {
                 confirmImmediately = true;
             }
         }
@@ -488,12 +488,12 @@ contract SyscoinClaimManager is Initializable, SyscoinDepositsManager, SyscoinEr
             // distribute 0.7 eth to last 7 approved superblock submitters (0.1 each)
             uint numPaid = 0;
             address prevSubmitter;
-            SyscoinSuperblocksI.Status status;
+            VircleSuperblocksI.Status status;
             while (numPaid < 7) {
                 (,,,,,superblockHash,prevSubmitter,status,) = trustedSuperblocks.getSuperblock(superblockHash);
                 if(superblockHash == 0x0)
                     break;
-                if (status != SyscoinSuperblocksI.Status.Approved) {
+                if (status != VircleSuperblocksI.Status.Approved) {
                     continue;
                 }
                 deposits[prevSubmitter] = deposits[prevSubmitter].add(100000000000000000); // 0.1 ether
@@ -519,7 +519,7 @@ contract SyscoinClaimManager is Initializable, SyscoinDepositsManager, SyscoinEr
     // @dev - Check if a superblock can be semi approved by calling checkClaimFinished
     function getInBattleAndSemiApprovable(bytes32 superblockHash) external view returns (bool) {
         SuperblockClaim storage claim = claims[superblockHash];
-        return (trustedSuperblocks.getSuperblockStatus(superblockHash) == SyscoinSuperblocksI.Status.InBattle &&
+        return (trustedSuperblocks.getSuperblockStatus(superblockHash) == VircleSuperblocksI.Status.InBattle &&
             !claim.invalid && !claim.verificationOngoing && block.timestamp > claim.challengeTimeout
             && claim.challenger != address(0));
     }

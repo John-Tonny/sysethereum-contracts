@@ -105,8 +105,6 @@ module.exports = function(deployer, networkName, accounts) {
     }
     let burnVal = web3.utils.toWei("88.8", "finney"); // total supply 888m COIN on Syscoin
     erc20Asset = await deployer.deploy(ERC20Asset,
-      "SyscoinToken", "SYSX", 8,
-      {from: accounts[0], gas: 2000000 }
     );
     await erc20Asset.assign(accounts[0], burnVal);
     await erc20Asset.approve(SyscoinERC20Manager.address, burnVal, {from: accounts[0]}); 

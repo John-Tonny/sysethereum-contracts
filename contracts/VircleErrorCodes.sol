@@ -82,5 +82,5 @@ contract VircleErrorCodes {
     // error codes for relayTx
     uint constant ERR_RELAY_VERIFY = 30010;
     uint constant ERR_CANCEL_TRANSFER_VERIFY = 30020;
-    uint constant public minProposalDeposit = 3000000000000000000;
+    uint constant public minProposalDeposit = 3000000000;	// john  3000 trx
 }

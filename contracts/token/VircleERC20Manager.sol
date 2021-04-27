@@ -11,7 +11,7 @@ contract VircleERC20Manager is Initializable {
     // Lock constants
     uint private constant MIN_LOCK_VALUE = 10; // 0.1 token
     uint private constant SUPERBLOCK_SUBMITTER_LOCK_FEE = 10000; // 10000 = 0.01%
-    uint private constant MIN_CANCEL_DEPOSIT = 3000000000000000000; // 3 eth
+    uint private constant MIN_CANCEL_DEPOSIT = 3000000000; // 3000 trx  // john
     uint private constant CANCEL_TRANSFER_TIMEOUT = 3600; // 1 hour in seconds
     uint private constant CANCEL_MINT_TIMEOUT = 907200; // 1.5 weeks in seconds
     // Variables set by constructor
@@ -238,9 +238,10 @@ contract VircleERC20Manager is Initializable {
     {
         require(vircleAddress.length > 0, "vircleAddress cannot be zero");
         require(assetGUID > 0, "Asset GUID must not be 0");
-        if (net != Network.REGTEST) {
+	// john 20210427
+        /*if (net != Network.REGTEST) {
             require(assetRegistry[assetGUID].erc20ContractAddress == erc20ContractAddress, "Asset registry contract does not match what was provided to this call");
-        }
+        }*/
 
         VircleERC20I erc20 = VircleERC20I(erc20ContractAddress);
         require(precision == erc20.decimals(), "Decimals were not provided with the correct value");
